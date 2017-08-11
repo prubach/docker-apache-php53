@@ -11,7 +11,7 @@ RUN apt-get update && \
 
     apt-get install -y \
       wget apache2 libapache2-mod-php53 apache2-mpm-prefork \
-      php53-common php53-cli php53-mod-gd php53-mod-mysql \
+      php53-common php53-cli php53-mod-gd php53-mod-mysqlnd \
       php53-mod-bcmath php53-mod-calendar php53-mod-bz2 \
       php53-mod-soap php53-mod-xml php53-mod-xmlreader php53-mod-xmlwriter \
       php53-mod-ftp php53-mod-imap php53-mod-dom php53-mod-exif \
@@ -24,6 +24,7 @@ RUN apt-get update && \
 
 COPY apache_default /etc/apache2/sites-available/000-default.conf
 COPY run /usr/local/bin/run
+COPY php.ini /etc/php.ini
 
 RUN chmod +x /usr/local/bin/run && \
     a2enmod rewrite php53 && \
