@@ -6,7 +6,7 @@ A Docker image based on Ubuntu 14.04, serving the old PHP 5.3 running as Apache 
 Tags
 -----
 
-* latest: Ubuntu 14.04 (LTS), Apache 2.2, PHP 5.3.29
+* latest: Ubuntu 14.04 (LTS), Apache 2.4, PHP 5.3.29
 
 Usage
 ------
