@@ -20,7 +20,8 @@ RUN apt-get update && \
       php53-mod-fileinfo php53-mod-gettext php53-mod-gmp php53-mod-json \
       php53-mod-mbstring php53-mod-openssl php53-mod-phar php53-mod-pcntl \
       php53-mod-simplexml php53-mod-curl php53-mod-readline php53-mod-tokenizer \
-      php53-mod-wddx php53-mod-xsl php53-mod-redis php53-mod-opcache php53-mod-mongo postfix && \
+      php53-mod-wddx php53-mod-xsl php53-mod-redis php53-mod-opcache \ 
+      php53-mod-mongo php53-mod-mcrypt postfix && \
       mkdir -p /var/lock/apache2 && mkdir -p /var/run/apache2 && \
       a2dismod mpm_event && a2enmod mpm_prefork
 
