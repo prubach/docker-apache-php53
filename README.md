@@ -12,7 +12,7 @@ Usage
 ------
 
 ```
-NAME="php52"
+NAME="php53"
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 docker run -d \
     -p 80:80 \
