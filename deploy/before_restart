@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+OLDREV=$1
+NEWREV=$2
+
+REGISTRY=cloud4wi
+APPNAME=myapp
+
+[ -f deploy/config ] && . ./deploy/config
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+echo -e "\n\n==> RUNNING PRE-RESTART SCRIPTS: branch '$BRANCH'\n"
+
+if [ -f VERSION ]; then
+  version=$(cat VERSION)
+else
+  version=latest
+fi
+
+echo -e "\nBuilding '$REGISTRY/$APPNAME:$version'\n"
+docker build -t $REGISTRY/$APPNAME:$version .
+
+if [ $? -gt 0 ]; then
+	echo -e "\n\nERROR rebuilding container for '$REGISTRY/$APPNAME:$version, stop here\n"
+	exit 1
+fi
+
+echo -e "\n\n"

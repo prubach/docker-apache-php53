@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# default config values
+REGISTRY=cloud4wi
+APPNAME=myapp
+GIT_REPO=https://github.com/myteam/myapp
+GIT_REPO_NAME=$APPNAME
+SLACK_HOOK=https://hooks.slack.com/services/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
+SLACK_URL=https://c4wteam.slack.com
+SLACK_CHANNEL=$APPNAME
+
+oldrev=$1
+newrev=$2
+
+[ -f deploy/config ] && . ./deploy/config
+
+echo -e "\n\n==> RUNNING POST-RESTART SCRIPTS\n"
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+HOSTNAME=$(hostname -f)
+
+if [[ -n "$oldrev" && -n "$newrev" ]]; then
+	# Links to changed files
+	FILES_CHANGED=''
+	for ITEM in $(git diff $oldrev $newrev --diff-filter=ACDMR --name-only); do
+	  FILES_CHANGED="$FILES_CHANGED\n* <$GIT_REPO/blob/$newrev/$ITEM|$ITEM>"
+	done
+
+	NUM_CHANGED=$(git diff $oldrev $newrev --diff-filter=ACDMR --name-only | wc -l)
+	BASEURL="$GIT_REPO/commit"
+	# the crypted sed here is required to remove the double-newline that come from the git log output
+	GITLOG=$(git log --abbrev-commit --pretty=format:"* %an commit [%h]($BASEURL/%H) di %ar: %B" ${oldrev}..${newrev} | sed ':a;N;$!ba;s/\n\n/\n/g')
+	
+	CHANGELOG="*$NUM_CHANGED* files changed:\n$FILES_CHANGED\n\n*Details*:\n$GITLOG\n"
+fi
+
+if [[ -n "$SLACK_HOOK" && -n "$SLACK_URL" ]]; then
+
+	# This fails on too old hosts for unsupported libssl version
+	# the error given is:
+	# curl: (35) error:0D0C50A1:asn1 encoding routines:ASN1_item_verify:unknown message digest algorithm
+	PAYLOAD="payload={\"channel\": \"${SLACK_CHANNEL}\", \"text\": \"Deployed <$GIT_REPO|$GIT_REPO_NAME> to *$HOSTNAME:$PWD* (branch: *$BRANCH*):\n$CHANGELOG.\"}"
+	curl -X POST --silent --data-urlencode "$PAYLOAD" "$SLACK_HOOK"
+	if [ "$?" -eq 0 ]; then
+	  echo -e "Updating channel ${SLACK_CHANNEL} on $SLACK_URL\n"
+	else
+	  echo -e "Error updating channel ${SLACK_CHANNEL} on $SLACK_URL\nMissing curl?\n"
+	fi
+fi
+
+echo -e "\n\n"
+

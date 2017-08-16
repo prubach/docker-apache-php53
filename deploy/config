@@ -1,0 +1,10 @@
+# configuration files for DEPLOY
+REGISTRY=cloud4wi
+APPNAME=apache-php53
+CONTAINER_DEPLOY=no
+GIT_REPO_NAME=docker-apache-php53
+GIT_REPO=https://github.com/Cloud4WiSF/$GIT_REPO_NAME
+SLACK_HOOK=https://hooks.slack.com/services/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
+SLACK_URL=https://c4wteam.slack.com
+# don't spam while testing, use @you when you test something
+SLACK_CHANNEL=#ops
