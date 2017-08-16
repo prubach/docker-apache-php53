@@ -2,14 +2,13 @@ FROM ubuntu:14.04
 MAINTAINER Seti <seti@setadesign.net>
 
 VOLUME ["/var/www"]
-
-RUN apt-get update && \
-    apt-get install -y python-software-properties software-properties-common && \
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update -q && \
+    apt-get install -y unzip python-software-properties software-properties-common && \
     add-apt-repository -y ppa:sergey-dryabzhinsky/php53 && \
     add-apt-repository -y ppa:sergey-dryabzhinsky/packages && \
-#    add-apt-repository -y ppa:sergey-dryabzhinsky/php53-modules && \
     add-apt-repository -y ppa:sergey-dryabzhinsky/php-modules && \
-    apt-get update && \
+    apt-get update -q && \
 
     apt-get install -y \
       wget apache2 libapache2-mod-php53 apache2-mpm-prefork \
@@ -29,11 +28,18 @@ COPY apache_default /etc/apache2/sites-available/000-default.conf
 COPY run /usr/local/bin/run
 COPY php.ini /etc/php.ini
 
+#RUN wget https://getcomposer.org/installer -O- | php -- --install-dir=/usr/local/bin --filename=composer
+
 RUN chmod +x /usr/local/bin/run && \
     a2enmod rewrite php53 && \
     rm -rf /etc/php53/cli/conf.d /etc/php53/apache2/conf.d && \
     ln -s /etc/php53/conf.d /etc/php53/cli/conf.d && \
     ln -s /etc/php53/conf.d /etc/php53/apache2/conf.d
+
+ENV CONSUL_TEMPLATE_VERSION 0.19.0
+RUN wget https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VERSION}/consul-template_${CONSUL_TEMPLATE_VERSION}_linux_amd64.zip \
+  && unzip consul-template_*.zip -d /usr/bin \
+  && rm consul-template_*.zip
 
 EXPOSE 80
 CMD ["/usr/local/bin/run"]
