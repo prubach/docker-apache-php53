@@ -1,8 +1,10 @@
 FROM ubuntu:14.04
 MAINTAINER Seti <seti@setadesign.net>
 
-VOLUME ["/var/www"]
+VOLUME ["/srv"]
+
 ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update -q && \
     apt-get install -y unzip python-software-properties software-properties-common && \
     add-apt-repository -y ppa:sergey-dryabzhinsky/php53 && \
@@ -28,7 +30,7 @@ COPY apache_default /etc/apache2/sites-available/000-default.conf
 COPY run /usr/local/bin/run
 COPY php.ini /etc/php.ini
 
-#RUN wget https://getcomposer.org/installer -O- | php -- --install-dir=/usr/local/bin --filename=composer
+RUN wget https://getcomposer.org/installer -O- | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN chmod +x /usr/local/bin/run && \
     a2enmod rewrite php53 && \
