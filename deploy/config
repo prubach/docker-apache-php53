@@ -1,6 +1,6 @@
 # configuration files for DEPLOY
 REGISTRY=cloud4wi
-APPNAME=apache-php53
+APPNAME=apache-php
 CONTAINER_DEPLOY=no
 GIT_REPO_NAME=docker-apache-php53
 GIT_REPO=https://github.com/Cloud4WiSF/$GIT_REPO_NAME
