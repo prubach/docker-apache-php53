@@ -30,7 +30,8 @@ COPY apache_default /etc/apache2/sites-available/000-default.conf
 COPY run /usr/local/bin/run
 COPY php.ini /etc/php.ini
 
-RUN wget https://getcomposer.org/installer -O- | php -- --install-dir=/usr/local/bin --filename=composer
+RUN wget -q https://getcomposer.org/installer -O- | php -- --install-dir=/usr/local/bin --filename=composer && \
+    chmod +x /usr/local/bin/composer
 
 RUN chmod +x /usr/local/bin/run && \
     a2enmod rewrite php53 && \
@@ -39,7 +40,7 @@ RUN chmod +x /usr/local/bin/run && \
     ln -s /etc/php53/conf.d /etc/php53/apache2/conf.d
 
 ENV CONSUL_TEMPLATE_VERSION 0.19.0
-RUN wget https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VERSION}/consul-template_${CONSUL_TEMPLATE_VERSION}_linux_amd64.zip \
+RUN wget -q https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VERSION}/consul-template_${CONSUL_TEMPLATE_VERSION}_linux_amd64.zip \
   && unzip consul-template_*.zip -d /usr/bin \
   && rm consul-template_*.zip
 
