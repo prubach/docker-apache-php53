@@ -1,18 +1,16 @@
 FROM ubuntu:14.04
-MAINTAINER Seti <seti@setadesign.net>
-
-VOLUME ["/srv"]
+MAINTAINER Lorello <lsalvadorini@cloud4wi.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update -q && \
-    apt-get install -y unzip python-software-properties software-properties-common && \
+    apt-get install -y --no-install-recommends unzip python-software-properties software-properties-common && \
     add-apt-repository -y ppa:sergey-dryabzhinsky/php53 && \
     add-apt-repository -y ppa:sergey-dryabzhinsky/packages && \
     add-apt-repository -y ppa:sergey-dryabzhinsky/php-modules && \
     apt-get update -q && \
 
-    apt-get install -y \
+    apt-get install -y --no-install-recommends \
       wget apache2 libapache2-mod-php53 apache2-mpm-prefork \
       php53-common php53-cli php53-mod-gd php53-mod-mysqlnd \
       php53-mod-bcmath php53-mod-calendar php53-mod-bz2 \
@@ -24,7 +22,8 @@ RUN apt-get update -q && \
       php53-mod-wddx php53-mod-xsl php53-mod-redis php53-mod-opcache \ 
       php53-mod-mongo php53-mod-mcrypt postfix && \
       mkdir -p /var/lock/apache2 && mkdir -p /var/run/apache2 && \
-      a2dismod mpm_event && a2enmod mpm_prefork
+      a2dismod mpm_event && a2enmod mpm_prefork && \
+      rm -rf /var/lib/apt/lists/*
 
 COPY apache_default /etc/apache2/sites-available/000-default.conf
 COPY run /usr/local/bin/run
@@ -46,3 +45,4 @@ RUN wget -q https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VER
 
 EXPOSE 80
 CMD ["/usr/local/bin/run"]
+
