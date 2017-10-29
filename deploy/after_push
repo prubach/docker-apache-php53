@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -e
+oldrev=$1
+newrev=$2
+
+[ -f deploy/config ] && . ./deploy/config
+
+run() {
+  [ -x $1 ] && $1 $oldrev $newrev
+}
+
+echo -e "\n\n==> PUSH RECEIVED\n"
+
+if [[ -n "$oldrev" && -n "$newrev" ]]; then
+
+	FILES_CHANGED=$(git diff $oldrev $newrev --diff-filter=ACDMR --name-only)
+	NUM_CHANGED=$(git diff $oldrev $newrev --diff-filter=ACDMR --name-only | wc -l)
+
+	echo -e "$NUM_CHANGED files changed:\n$FILES_CHANGED\n"
+
+	echo -e "\nChangeLog:\n"
+	
+	# il sed rimuove il doppio a-capo che mi arriva dal git log (il %B)
+	git log --abbrev-commit --pretty=format:'* %h %an %ar: %B' ${oldrev}..${newrev} | sed ':a;N;$!ba;s/\n\n/\n/g'
+
+fi
+
+
+# not needed, it should be in the post-receive hook: 
+# umask 0002
+
+# uncomment next line if umask won't obey!
+#find . -not -perm -g=w -exec chmod g+w {} \;
+
+# create log dir if not exists
+[ ! -d log ] && mkdir log
+
+# run before_restart always
+run deploy/before_restart
+
+# run after_restart only if the restart SCRIPT return 0
+run deploy/restart && run deploy/after_restart
+
