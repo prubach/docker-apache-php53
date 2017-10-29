@@ -2,12 +2,12 @@
     #ServerName www.example.com
 
     ServerAdmin webmaster@cloud4wi.com
-    DocumentRoot /srv
+    DocumentRoot /var/www/html
 
-    <Directory /srv>
+    <Directory /var/www/html>
+        Options Indexes FollowSymLinks
         AllowOverride All
-        Order allow,deny
-        Allow from all
+        Require all granted
     </Directory>
 
     # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
